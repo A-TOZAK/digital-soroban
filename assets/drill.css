@@ -183,3 +183,44 @@
   word-break: auto-phrase; text-wrap: pretty;
 }
 .why-note strong { font-weight: 600; }
+
+/* ===== 問題を解いているあいだの画面 =====
+   盤を問題の中へ引っ越しさせ、問い→盤→こたえあわせ を1つの塊にする。
+   もとは盤の下端から問題文まで664pxあり、スマホ（844px）では同時に見えなかった。 */
+body.in-quiz .hero,
+body.in-quiz .sec-head,
+body.in-quiz .grade-tabs { display: none; }
+body.in-quiz .drill.block { padding-top: 28px; border-top: none; }
+
+/* 引っ越してきた盤は、上下を細い罫で区切って「ここが道具」と分かるようにする */
+.board-slot .board-sec {
+  margin: 14px 0 16px;
+  padding: 16px 0 14px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+/* 伏せてある数の席は、解いているあいだは小さめに（空白が穴に見えないように） */
+.board-slot .readout { margin-top: 2px; }
+.board-slot .readout .num { font-size: 1.5rem; }
+.board-slot .readout .kanji { font-size: 0.85rem; }
+
+/* 解いているあいだ、盤のボタンは脇役にする。
+   「ごわさん」は問題中は使わない（もとの形に戻すのは「もういちど」）ので隠す。 */
+.board-slot .board-tools { margin-top: 4px; gap: 6px; }
+.board-slot .board-tools .btn {
+  min-height: 36px; padding: 0 12px; font-size: 0.85rem;
+  border-color: var(--line);
+}
+.board-slot #clearBtn { display: none; }
+/* 「大きくうつす」は先生が前で見せる道具。解いているあいだは出さない
+   （コースをえらぶ画面にはいつでもある） */
+.board-slot #stageBtn { display: none; }
+
+/* 問いは大きく、上に置く */
+body.in-quiz .quiz-head { margin-bottom: 10px; }
+body.in-quiz .quiz-course { margin-top: 0; }
+
+@media (max-width: 600px) {
+  body.in-quiz .drill.block { padding-top: 18px; }
+  .board-slot .board-sec { margin: 10px 0 12px; padding: 12px 0 10px; }
+}

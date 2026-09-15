@@ -17,6 +17,21 @@
 
   function $(id) { return document.getElementById(id); }
 
+  /**
+   * そろばんの節を、問題の中へ引っ越しさせる／もとの場所へ戻す。
+   * 問題を解いているあいだは 問い→盤→こたえあわせ が縦にそろい、
+   * 珠を動かすたびに画面を行き来しなくてよくなる（もとは664px離れていた）。
+   */
+  function moveBoard(where) {
+    if (!el.boardSec) return;
+    var target = (where === 'quiz') ? el.boardSlot : el.boardHome;
+    if (!target || el.boardSec.previousElementSibling === target ||
+        el.boardSec.parentNode === target) return;
+    if (where === 'quiz') target.appendChild(el.boardSec);
+    else target.parentNode.insertBefore(el.boardSec, target);
+    document.body.classList.toggle('in-quiz', where === 'quiz');
+  }
+
   /** 読み取った数を出すか、伏せるか。
       ふだんは伏せておく——珠を読むのが先で、数はたしかめに使うもの。 */
   function isRevealed() { return document.body.classList.contains('reveal'); }
@@ -131,14 +146,16 @@
     cur = { course: course, index: 0 };
     el.courseList.hidden = true;
     el.quiz.hidden = false;
+    moveBoard('quiz');
     el.quizCourse.textContent = grade + '年　' + course.name;
     el.qTotal.textContent = PER_SET;
     nextQuestion(true);
-    el.quiz.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    el.quiz.scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
 
   function backToList() {
     cur = null;
+    moveBoard('home');
     el.quiz.hidden = true;
     el.courseList.hidden = false;
     renderCourses();
@@ -375,7 +392,7 @@
     ['courseList', 'quiz', 'quizCourse', 'quizAsk', 'quizInput', 'ansBox', 'qNow', 'qTotal',
       'checkBtn', 'hintBtn', 'nextBtn', 'judge', 'beatSay', 'whyNote', 'quizBack',
       'readNum', 'readKanji', 'clearBtn', 'soundBtn', 'stageBtn', 'stageExit', 'rubyToggle',
-      'fitBtn', 'sorobanWrap', 'revealBtn']
+      'fitBtn', 'sorobanWrap', 'revealBtn', 'boardSec', 'boardSlot', 'boardHome']
       .forEach(function (id) { el[id] = $(id); });
 
     // 選択肢の入れ物と「もういちど」ボタンを足す
@@ -444,11 +461,20 @@
       if (on) global.Sound.click('beam', 1);
     });
 
-    el.stageBtn.addEventListener('click', function () { document.body.classList.add('stage'); });
-    el.stageExit.addEventListener('click', function () { document.body.classList.remove('stage'); });
+    el.stageBtn.addEventListener('click', function () {
+      moveBoard('home');                       // 問題の中にあると、大きくうつしたとき盤ごと消えるため
+      document.body.classList.add('stage');
+    });
+    el.stageExit.addEventListener('click', function () {
+      document.body.classList.remove('stage');
+      if (cur) moveBoard('quiz');              // 問題の途中なら、また問題の中へ戻す
+    });
     el.revealBtn.addEventListener('click', function () { setReveal(!isRevealed()); });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') document.body.classList.remove('stage');
+      if (e.key === 'Escape') {
+        document.body.classList.remove('stage');
+        if (cur) moveBoard('quiz');
+      }
     });
 
     el.rubyToggle.addEventListener('change', function () {

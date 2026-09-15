@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/styles.css?v=2">
-    <link rel="stylesheet" href="assets/soroban.css?v=2">
-    <link rel="stylesheet" href="assets/drill.css?v=2">
+    <link rel="stylesheet" href="assets/styles.css?v=3">
+    <link rel="stylesheet" href="assets/soroban.css?v=3">
+    <link rel="stylesheet" href="assets/drill.css?v=3">
   </head>
   <body>
 
@@ -84,7 +84,7 @@
         </div>
       </section>
 
-      <section class="board-sec">
+      <section class="board-sec" id="boardSec">
       <div class="soroban-wrap" id="sorobanWrap">
         <div class="soroban" id="soroban">
           <div class="board">
@@ -114,6 +114,7 @@
         <button type="button" class="btn stage-exit" id="stageExit">もどる</button>
       </div>
       </section>
+      <div id="boardHome" hidden></div>
 
       <section class="drill block" id="drill" aria-labelledby="drillTitle">
        <div class="wrap">
@@ -145,6 +146,9 @@
             <input id="ansBox" type="text" inputmode="decimal" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="数を打つ">
           </div>
 
+          <!-- 問題を解いているあいだ、そろばんの節がここへ引っ越してくる -->
+          <div class="board-slot" id="boardSlot"></div>
+
           <div class="quiz-tools">
             <button type="button" class="btn primary" id="checkBtn">こたえあわせ</button>
             <button type="button" class="btn" id="hintBtn">ヒントを見る</button>
@@ -165,10 +169,10 @@
       <p>第1版・© School Stock</p>
     </footer>
 
-    <script src="assets/abacus.js?v=2"></script>
-    <script src="assets/sound.js?v=2"></script>
-    <script src="assets/soroban.js?v=2"></script>
-    <script src="data/courses.js?v=2"></script>
-    <script src="assets/drill.js?v=2"></script>
+    <script src="assets/abacus.js?v=3"></script>
+    <script src="assets/sound.js?v=3"></script>
+    <script src="assets/soroban.js?v=3"></script>
+    <script src="data/courses.js?v=3"></script>
+    <script src="assets/drill.js?v=3"></script>
   </body>
 </html>
