@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="ブラウザでさわれる、本物に近いそろばん。珠はタップでもドラッグでも動きます。小学校3年・4年の算数（学習指導要領 A(8) そろばん）にそった練習問題つき。登録なし・無料。">
+    <title>デジタルそろばん | School Stock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css?v=1">
+    <link rel="stylesheet" href="assets/soroban.css?v=1">
+    <link rel="stylesheet" href="assets/drill.css?v=1">
+  </head>
+  <body>
+
+    <!-- 珠のかたち。1つだけ描いて、85こぶん使いまわす。 -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+      <linearGradient id="sbUp" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0"   stop-color="#8b5224"/>
+        <stop offset=".30" stop-color="#b3743a"/>
+        <stop offset=".74" stop-color="#dfa964"/>
+        <stop offset="1"   stop-color="#f2cd93"/>
+      </linearGradient>
+      <linearGradient id="sbDn" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0"   stop-color="#dba463"/>
+        <stop offset=".30" stop-color="#a9642c"/>
+        <stop offset=".78" stop-color="#7b451c"/>
+        <stop offset="1"   stop-color="#5c3212"/>
+      </linearGradient>
+      <linearGradient id="sbSide" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0"   stop-color="#331906" stop-opacity=".62"/>
+        <stop offset=".17" stop-color="#331906" stop-opacity=".14"/>
+        <stop offset=".40" stop-color="#331906" stop-opacity="0"/>
+        <stop offset=".62" stop-color="#331906" stop-opacity="0"/>
+        <stop offset=".84" stop-color="#331906" stop-opacity=".18"/>
+        <stop offset="1"   stop-color="#331906" stop-opacity=".66"/>
+      </linearGradient>
+      <radialGradient id="sbSpec" cx=".5" cy=".5" r=".5">
+        <stop offset="0"   stop-color="#fff7ea" stop-opacity=".8"/>
+        <stop offset=".5"  stop-color="#fff7ea" stop-opacity=".24"/>
+        <stop offset="1"   stop-color="#fff7ea" stop-opacity="0"/>
+      </radialGradient>
+      <symbol id="bead" viewBox="0 0 120 60" preserveAspectRatio="none">
+        <!-- 上半分：木を挽いたゆるい丸みをつける -->
+        <path d="M2 30 C18 17 30 9 44 2 L76 2 C90 9 102 17 118 30 Z" fill="url(#sbUp)"/>
+        <!-- 下半分 -->
+        <path d="M2 30 C18 43 30 51 44 58 L76 58 C90 51 102 43 118 30 Z" fill="url(#sbDn)"/>
+        <!-- 左右の端は向こうへ回りこむので落とす -->
+        <path d="M2 30 C18 17 30 9 44 2 L76 2 C90 9 102 17 118 30 C102 43 90 51 76 58 L44 58 C30 51 18 43 2 30 Z" fill="url(#sbSide)"/>
+        <!-- いちばん太いところの光 -->
+        <path d="M6 30 H114" stroke="#ffeacb" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/>
+        <!-- 下からの照り返し -->
+        <path d="M30 47 C44 54 52 56 60 56.6" stroke="#f0bd7c" stroke-opacity=".28" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <!-- 映りこみ -->
+        <ellipse cx="44" cy="15" rx="21" ry="6" fill="url(#sbSpec)" transform="rotate(-21 44 15)"/>
+        <!-- 軸の通る穴のふち -->
+        <path d="M44 3 H76" stroke="#3d1f08" stroke-opacity=".6" stroke-width="3"/>
+        <path d="M44 57" stroke="none"/>
+        <path d="M44 57 H76" stroke="#280f03" stroke-opacity=".65" stroke-width="3"/>
+        <!-- 輪かく -->
+        <path d="M2 30 C18 17 30 9 44 2 L76 2 C90 9 102 17 118 30 C102 43 90 51 76 58 L44 58 C30 51 18 43 2 30 Z" fill="none" stroke="#3f2207" stroke-opacity=".6" stroke-width="1.4"/>
+      </symbol>
+    </defs></svg>
+
+    <header class="topbar">
+      <a class="brand" href="https://a-tozak.github.io/School_Stock/">School Stock</a>
+      <nav aria-label="ページ">
+        <label class="ruby-switch"><input type="checkbox" id="rubyToggle" checked>ふりがな</label>
+        <a href="about.html">先生・おうちの方へ</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-inner">
+          <div class="hero-text">
+            <p class="eyebrow">Soroban</p>
+            <h1 class="page-title ja-phrase">デジタルそろばん</h1>
+            <p class="lede ja-phrase">珠を、タップでも、ドラッグでも動かせます。<strong>実物のそろばんをさわったあとに、何回でもやり直すための練習の道具</strong>です。</p>
+            <p class="hero-meta">小学校3年・4年　算数<span class="dot">・</span>登録なし・無料</p>
+          </div>
+          <p class="hero-art"><img src="assets/img/hero.webp" alt="そろばんの珠に指をのせている子どもの水彩" width="1200" height="800"></p>
+        </div>
+      </section>
+
+      <section class="board-sec">
+      <div class="soroban-wrap" id="sorobanWrap">
+        <div class="soroban" id="soroban">
+          <div class="board">
+            <div class="field" id="field" role="group" aria-label="そろばん">
+              <div class="beam" id="beam" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="ones-row"><div class="ones-marker" id="onesMarker" style="--i:14" role="slider"
+               aria-label="一の位のいちを決める" aria-valuemin="8" aria-valuemax="16" aria-valuenow="14" tabindex="0">
+            <span class="tri" aria-hidden="true">▲</span><span class="lbl">一の位</span>
+          </div></div>
+          <div class="places" id="places" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <p class="readout" aria-live="polite">
+        <span class="num" id="readNum">0</span>
+        <span class="kanji" id="readKanji"></span>
+      </p>
+
+      <div class="board-tools">
+        <button type="button" class="btn" id="clearBtn">ごわさん（ぜんぶ0）</button>
+        <button type="button" class="btn hide-on-stage" id="fitBtn" aria-pressed="false" hidden>ぜんぶ見る</button>
+        <button type="button" class="btn hide-on-stage" id="soundBtn" aria-pressed="false">おと：オフ</button>
+        <button type="button" class="btn hide-on-stage" id="stageBtn">大きくうつす</button>
+        <button type="button" class="btn stage-only" id="revealBtn" aria-pressed="false">数を出す</button>
+        <button type="button" class="btn stage-exit" id="stageExit">もどる</button>
+      </div>
+      </section>
+
+      <section class="drill block" id="drill" aria-labelledby="drillTitle">
+       <div class="wrap">
+        <div class="sec-head">
+          <div class="sec-head-text">
+            <h2 id="drillTitle" class="ja-phrase">やってみる</h2>
+            <p class="sec-lede ja-phrase">学年をえらぶと、コースが出ます。1コース5もん。数はまいかい作り直すので、何回でもできます。</p>
+          </div>
+          <p class="sec-motif"><img src="assets/img/motif_yatte.webp" alt="えんぴつとノートの水彩" loading="lazy"></p>
+        </div>
+
+        <div class="grade-tabs" role="tablist" aria-label="学年">
+          <button type="button" class="gtab is-on" role="tab" aria-selected="true"  data-grade="3">3年</button>
+          <button type="button" class="gtab"       role="tab" aria-selected="false" data-grade="4">4年</button>
+        </div>
+
+        <div class="course-list" id="courseList"></div>
+
+        <div class="quiz" id="quiz" hidden>
+          <div class="quiz-head">
+            <button type="button" class="btn quiz-back" id="quizBack">← コースをえらぶ</button>
+            <p class="quiz-count"><span id="qNow">1</span> / <span id="qTotal">5</span>もん</p>
+          </div>
+          <p class="quiz-course" id="quizCourse"></p>
+          <p class="quiz-ask ja-phrase" id="quizAsk"></p>
+
+          <div class="quiz-input" id="quizInput" hidden>
+            <label class="visually-hidden" for="ansBox">こたえ</label>
+            <input id="ansBox" type="text" inputmode="decimal" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="数を打つ">
+          </div>
+
+          <div class="quiz-tools">
+            <button type="button" class="btn primary" id="checkBtn">こたえあわせ</button>
+            <button type="button" class="btn" id="hintBtn">ヒントを見る</button>
+            <button type="button" class="btn" id="nextBtn" hidden>つぎのもんだい →</button>
+          </div>
+
+          <p class="why-note ja-phrase" id="whyNote" hidden></p>
+          <p class="beat-say" id="beatSay" hidden></p>
+          <p class="judge" id="judge" aria-live="polite" hidden></p>
+        </div>
+       </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <p class="f-art"><img src="assets/img/footer.webp" alt="そろばんの珠がひとつ置かれた机の水彩" loading="lazy"></p>
+      <p class="ja-phrase">珠の動き・問題はすべて自作。問題の範囲は小学校学習指導要領（平成29年告示）算数 第3学年・第4学年 A(8)「そろばん」にそっています。<span class="sep">／</span><a href="about.html">先生・おうちの方へ</a></p>
+      <p>第1版・© School Stock</p>
+    </footer>
+
+    <script src="assets/abacus.js?v=1"></script>
+    <script src="assets/sound.js?v=1"></script>
+    <script src="assets/soroban.js?v=1"></script>
+    <script src="data/courses.js?v=1"></script>
+    <script src="assets/drill.js?v=1"></script>
+  </body>
+</html>

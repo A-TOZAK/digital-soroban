@@ -1,0 +1,93 @@
+/* デジタルそろばん — 土台
+   デジタル英語辞典・デジタル国語辞典と同じトークンと書体をそのまま借りている。 */
+:root {
+  --paper: #fbfaf7;
+  --white: #ffffff;
+  --ink: #20242b;
+  --ink-soft: #5a6069;
+  --line: #d9d6ce;
+  --line-dark: #b9b5aa;
+  --ai: #29527a;        /* 藍 = メイン */
+  --ai-soft: #eef3f8;
+  --shu: #c3502b;       /* 朱 = 強調（最小限） */
+  --midori: #2f7a54;    /* 正解のしるしにだけ使う */
+  --font: "Klee One", "Klee", "UD デジタル 教科書体 N-R", "UDDigiKyokashoN-R", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+  font-family: var(--font);
+  font-size: 17px;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.85;
+  line-break: strict;
+  -webkit-text-size-adjust: 100%;
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: none; padding: 0; }
+a { color: var(--ai); }
+h1, h2, h3, p, dl, dd, figure, ol, ul { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+[hidden] { display: none !important; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); border: 0;
+}
+.inner { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+.ja-phrase { word-break: auto-phrase; text-wrap: pretty; }
+.nowrap-term { white-space: nowrap; }
+
+/* ふりがな */
+ruby { ruby-align: center; }
+rt { font-size: 0.5em; font-weight: 400; color: var(--ink-soft); letter-spacing: 0; }
+body.no-ruby rt { display: none; }
+
+/* ===== 上の帯 ===== */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 14px 20px; font-size: 0.85rem;
+}
+.topbar .brand { color: var(--ink-soft); text-decoration: none; letter-spacing: 0.16em; }
+.topbar nav { display: flex; align-items: center; gap: 18px; }
+.topbar nav a { color: var(--ink-soft); text-decoration: none; white-space: nowrap; }
+.topbar nav a:hover { color: var(--ink); text-decoration: underline; }
+.topbar .brand { white-space: nowrap; }
+.ruby-switch { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-soft); cursor: pointer; white-space: nowrap; }
+.ruby-switch input { width: 15px; height: 15px; accent-color: var(--ai); }
+
+/* ===== 下の帯 ===== */
+.site-foot {
+  padding: 26px 20px 34px; text-align: center;
+  font-size: 0.8rem; color: var(--ink-soft); line-height: 1.9;
+}
+.site-foot a { color: var(--ink-soft); }
+.site-foot .sep { margin: 0 6px; }
+
+/* ===== ボタンの型（藍1色・角丸は最小） ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 44px; padding: 0 16px;
+  border: 1.5px solid var(--line-dark); border-radius: 4px;
+  background: var(--white); color: var(--ink);
+  font-size: 0.95rem; white-space: nowrap;
+  transition: border-color .12s, background .12s;
+}
+.btn:hover { border-color: var(--ai); }
+.btn:active { background: var(--ai-soft); }
+.btn.is-on { border-color: var(--ai); background: var(--ai-soft); color: var(--ai); }
+.btn.primary { background: var(--ai); border-color: var(--ai); color: #fff; }
+.btn.primary:hover { background: #1f4160; }
+.btn:focus-visible { outline: 3px solid var(--ai); outline-offset: 2px; }
+
+@media (max-width: 600px) {
+  .topbar { padding: 12px 14px; font-size: 0.78rem; }
+  .topbar nav { gap: 10px; }
+  .topbar .brand { letter-spacing: 0.08em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

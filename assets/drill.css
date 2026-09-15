@@ -1,0 +1,185 @@
+/* デジタルそろばん — 上の説明と、問題のところ */
+
+/* ===== 面の作り =====
+   研究大会サイト（rika-kentaikai-2026）と同じ組み方にそろえている。
+   面は色で塗り分けず、1本の細い罫で分ける。見出しの前に藍の短い棒を置く。 */
+.wrap { width: min(1000px, calc(100% - 44px)); margin: 0 auto; }
+.block { padding: 64px 0 74px; }
+.block + .block,
+.board-sec + .block { border-top: 1px solid var(--line); }
+
+.eyebrow {
+  display: flex; align-items: center; gap: 12px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.75rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ai); margin-bottom: 10px;
+}
+.eyebrow::after { content: ""; height: 1px; width: 56px; background: var(--ai); opacity: .45; }
+
+/* ===== ヒーロー ===== */
+.hero { border-bottom: 1px solid var(--line); }
+.hero-inner {
+  width: min(1000px, calc(100% - 44px)); margin: 0 auto;
+  padding: 44px 0 36px;
+  display: grid; grid-template-columns: minmax(0, 54%) minmax(0, 46%);
+  gap: 20px; align-items: center;
+}
+.hero-text { min-width: 0; }
+.page-title {
+  font-size: clamp(1.8rem, 5.2vw, 2.9rem); font-weight: 600;
+  letter-spacing: 0.08em; line-height: 1.35; margin-bottom: 12px;
+}
+.lede {
+  font-size: 1rem; color: var(--ink-soft); line-height: 1.95;
+  max-width: 30em;
+}
+.lede strong { color: var(--ink); font-weight: 600; }
+.hero-meta {
+  margin-top: 14px; font-size: 0.82rem; color: var(--ink-soft);
+  letter-spacing: 0.06em;
+}
+.hero-meta .dot { margin: 0 8px; opacity: .5; }
+.hero-art { margin: 0; min-width: 0; }
+.hero-art img { width: 100%; height: auto; display: block; }
+
+/* ===== そろばんの節 ===== */
+.board-sec { padding: 26px 0 34px; }
+
+/* ===== 節の見出し ===== */
+.sec-head {
+  display: flex; align-items: flex-end; gap: 26px;
+  justify-content: space-between; margin-bottom: 30px;
+}
+.sec-head-text { flex: 1; min-width: 0; }
+.sec-head-text::before {
+  content: ""; display: block;
+  width: 48px; height: 4px; background: var(--ai); margin-bottom: 20px;
+}
+.sec-head h2 {
+  font-size: clamp(1.3rem, 3vw, 1.75rem); font-weight: 600;
+  letter-spacing: 0.06em; line-height: 1.55;
+}
+.sec-lede {
+  margin-top: 8px; font-size: 0.92rem; color: var(--ink-soft);
+  line-height: 1.9; max-width: 32em;
+}
+.sec-motif { width: 132px; flex-shrink: 0; margin: 0 0 -6px; }
+.sec-motif img { width: 100%; height: auto; display: block; }
+
+.grade-tabs { display: flex; gap: 0; margin: 16px 0 18px; }
+.gtab {
+  flex: 1; min-height: 46px; padding: 0 10px;
+  border: 1.5px solid var(--line-dark); background: var(--white);
+  color: var(--ink-soft); font-size: 1rem;
+}
+.gtab + .gtab { border-left: none; }
+.gtab:first-child { border-radius: 4px 0 0 4px; }
+.gtab:last-child { border-radius: 0 4px 4px 0; }
+.gtab.is-on { background: var(--ai); border-color: var(--ai); color: #fff; font-weight: 600; }
+.gtab:focus-visible { outline: 3px solid var(--ai); outline-offset: 2px; }
+
+.course-group + .course-group { margin-top: 34px; }
+.group-title {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 0.9rem; color: var(--ink-soft); letter-spacing: 0.1em;
+  margin-bottom: 12px; padding-left: 2px;
+}
+.group-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+.course {
+  display: flex; align-items: center; gap: 22px;
+  width: 100%; text-align: left;
+  padding: 20px 22px; margin-bottom: 14px;
+  border: 1px solid var(--line); border-radius: 0;
+  background: var(--white);
+  transition: border-color .12s, box-shadow .12s, transform .12s;
+}
+.course:hover { border-color: var(--ai); box-shadow: 4px 4px 0 var(--ai-soft); }
+.course:focus-visible { outline: 3px solid var(--ai); outline-offset: 2px; }
+.c-text { flex: 1; min-width: 0; }
+.c-art { width: 120px; flex-shrink: 0; }
+.c-art img { width: 100%; height: auto; display: block; }
+/* 地が暗い絵（帳面・星空）は紙に溶けないので、そこだけ角をまるめて収める */
+.c-art img.solid { border-radius: 3px; }
+
+.cnum {
+  display: block; font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.72rem; letter-spacing: 0.2em; color: var(--ai); margin-bottom: 5px;
+}
+.cname { display: block; font-size: 1.12rem; font-weight: 600; line-height: 1.6; }
+.cdesc { display: block; font-size: 0.95rem; color: var(--ink-soft); line-height: 1.8; margin-top: 4px; }
+.cnote {
+  display: block; font-size: 0.8rem; color: var(--ink-soft);
+  line-height: 1.75; margin-top: 10px; padding-top: 9px;
+  border-top: 1px dotted var(--line-dark);
+}
+
+/* ===== 1問ずつ ===== */
+.quiz { margin-top: 4px; }
+.quiz-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.quiz-back { min-height: 40px; font-size: 0.88rem; }
+.quiz-count { font-size: 0.85rem; color: var(--ink-soft); white-space: nowrap; }
+.quiz-course {
+  margin-top: 12px; font-size: 0.85rem; color: var(--ai);
+  letter-spacing: 0.06em;
+}
+.quiz-ask { margin-top: 4px; font-size: 1.05rem; line-height: 1.8; }
+.quiz-ask .formula {
+  display: block; font-size: clamp(1.3rem, 5vw, 1.9rem); font-weight: 600;
+  letter-spacing: 0.04em; line-height: 1.5; margin: 2px 0 4px;
+}
+.quiz-ask .howto { display: block; font-size: 1rem; color: var(--ink-soft); }
+.quiz-ask .big { font-size: clamp(1.3rem, 5vw, 1.9rem); }
+
+.quiz-input { margin-top: 12px; }
+#ansBox {
+  width: min(280px, 100%); height: 52px; padding: 0 16px;
+  font-size: 1.2rem; letter-spacing: 0.04em;
+  border: 1.5px solid var(--line-dark); border-radius: 4px;
+  background: var(--white); outline: none;
+  -webkit-appearance: none; appearance: none;
+}
+#ansBox:focus { border-color: var(--ai); }
+
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
+.choice { min-height: 52px; font-size: 1.05rem; }
+
+.quiz-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+.judge {
+  margin-top: 12px; padding: 11px 14px;
+  border-left: 3px solid var(--line-dark);
+  font-size: 0.95rem; line-height: 1.8;
+  word-break: auto-phrase; text-wrap: pretty;
+}
+.judge.is-ok   { border-left-color: var(--ai); color: var(--ai); font-weight: 600; }
+.judge.is-ng   { border-left-color: var(--line-dark); color: var(--ink); }
+.judge.is-wait { border-left-color: var(--line-dark); color: var(--ink-soft); }
+
+@media (max-width: 860px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 10px; padding: 26px 0 24px; }
+  .hero-art { order: -1; width: min(420px, 100%); margin: 0 auto; }
+  .hero-text { text-align: center; }
+  .lede, .hero-meta { margin-left: auto; margin-right: auto; }
+  .eyebrow { justify-content: center; }
+  .eyebrow::after { width: 36px; }
+  .sec-head-text::before { margin-left: 0; }
+}
+@media (max-width: 600px) {
+  .choices { grid-template-columns: 1fr; }
+  .block { padding: 44px 0 50px; }
+  .sec-motif { width: 88px; }
+  .sec-head { gap: 16px; margin-bottom: 24px; }
+  .course { gap: 14px; padding: 16px 16px; }
+  .c-art { width: 84px; }
+  .cname { font-size: 1.05rem; }
+}
+
+/* なぜそう動かすか（コースの1問目だけ／2けたの回はいつも） */
+.why-note {
+  margin-top: 12px; padding: 11px 14px;
+  background: var(--ai-soft); border-left: 3px solid var(--ai);
+  font-size: 0.98rem; line-height: 1.8; color: var(--ink);
+  word-break: auto-phrase; text-wrap: pretty;
+}
+.why-note strong { font-weight: 600; }

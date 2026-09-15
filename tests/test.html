@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>デジタルそろばん — 機械検査</title>
+<style>
+ body { font-family: ui-monospace, Menlo, monospace; margin: 24px; line-height: 1.7; background:#fbfaf7; color:#20242b; }
+ h1 { font-size: 18px; } h2 { font-size: 15px; margin: 22px 0 6px; }
+ .ok { color:#1d6b43; } .ng { color:#b23; font-weight:700; }
+ table { border-collapse: collapse; margin-top: 6px; font-size: 13px; }
+ td, th { border:1px solid #d9d6ce; padding: 3px 9px; text-align:left; }
+ #sum { font-size: 16px; padding: 10px 14px; margin-top: 18px; border-left: 4px solid #29527a; background:#eef3f8; }
+ pre { font-size: 12px; background:#fff; border:1px solid #d9d6ce; padding:8px; overflow:auto; max-height:240px; }
+</style>
+</head>
+<body>
+<h1>デジタルそろばん — 機械検査</h1>
+<p>このページを開くと、下の4本がその場で走ります。1件でも赤が出たら公開しません。</p>
+<div id="out"></div>
+<div id="sum"></div>
+
+<script src="../assets/abacus.js?v=1"></script>
+<script src="../data/courses.js?v=1"></script>
+<script>
+(function(){
+  var A = window.Abacus, C = window.COURSES;
+  var out = document.getElementById('out');
+  var total = 0, bad = 0;
+  var fails = [];
+
+  function sec(t){ var h=document.createElement('h2'); h.textContent=t; out.appendChild(h); }
+  function line(html){ var p=document.createElement('div'); p.innerHTML=html; out.appendChild(p); return p; }
+  function judge(name, n, errs){
+    total += n; bad += errs.length;
+    if (errs.length) fails.push(name + ' … ' + errs.slice(0,6).join(' / ') + (errs.length>6?' ほか'+(errs.length-6)+'件':''));
+    line('<span class="'+(errs.length?'ng':'ok')+'">'+(errs.length?'NG':'OK')+'</span> '+name+
+         '　'+n+'通り／まちがい '+errs.length+'件');
+    if (errs.length) { var pre=document.createElement('pre'); pre.textContent=errs.slice(0,60).join('\n'); out.appendChild(pre); }
+  }
+
+  function applyBeats(start, beats){
+    var s = A.cloneState(start);
+    beats.forEach(function(b){ s.rods[b.rod].h=b.to.h; s.rods[b.rod].e=b.to.e; });
+    return s;
+  }
+
+  /* ---- 1. 珠の形 → 値の読み取り（総当たり） ---- */
+  sec('1. 珠の形から数を読む');
+  (function(){
+    var errs = [], n = 0;
+    // 1桁ぶんの総当たり（0〜9 が珠の形と1対1で対応するか）
+    for (var v = 0; v <= 9; v++) {
+      var c = A.canonical(v); n++;
+      if (c.h*5 + c.e !== v || c.e > 4 || c.h > 1) errs.push(v + ' の珠の形がおかしい');
+    }
+    // 17桁ぶんの位置をずらしながら、入れた数がそのまま読めるか
+    var samples = ['0','7','10','99','100','1000','30000','80000','2.6','2.9','0.02','0.87',
+                   '200000000','800000000','10000000000000','30000000000000',
+                   '12345678.9','999999999999999','100000000000000.01'];
+    samples.forEach(function(v){
+      n++;
+      var s = A.stateFromNumber(v);
+      if (!s) { errs.push(v + ' が盤に入らない'); return; }
+      var got = A.toNumberString(s);
+      var want = String(Number(v) === 0 ? '0' : v).replace(/^0+(?=\d)/,'').replace(/(\.\d*?)0+$/,'$1').replace(/\.$/,'');
+      if (got !== want) errs.push(v + ' → 読むと ' + got);
+    });
+    // 一の位のしるしを動かしても、桁あわせの比較が正しいか
+    for (var oi = 10; oi <= 16; oi++) {
+      n++;
+      var a = A.stateFromNumber('12.3', 14);
+      var b = A.stateFromNumber('12.3', oi);
+      if (!b) continue;
+      if (!A.sameValue(a, b)) errs.push('一の位を ' + oi + ' にすると 12.3 が別の数になる');
+    }
+    judge('数の読み取り', n, errs);
+  })();
+
+  /* ---- 1b. 位の名前つきの言いかた ---- */
+  (function(){
+    var errs = [], n = 0;
+    [['0','0'],['7','7'],['1234','1234'],['10000','1万'],['10001','1万1'],['30000','3万'],
+     ['200000000','2億'],['900000000000','9000億'],['30000000000000','30兆'],['90000000000000','90兆'],
+     ['2.6','2.6'],['0.02','0.02'],['12345678.9','12345678.9'],['20000000000.45','20000000000.45']]
+    .forEach(function(t){
+      n++;
+      var got = A.toKanjiUnits(t[0]);
+      if (got !== t[1]) errs.push(t[0] + ' → ' + got + '（' + t[1] + ' のはず）');
+    });
+    judge('位の名前つきの言いかた', n, errs);
+  })();
+
+  /* ---- 2. 運指の手順どおりに動かすと、必ず答えになるか ---- */
+  sec('2. 運指の手順（総当たり）');
+  (function(){
+    var errs = [], n = 0;
+    for (var a = 0; a <= 399; a++) {
+      for (var b = 0; b <= 399; b++) {
+        var st = A.stateFromNumber(String(a));
+        var r = A.plan(st, String(b), 'add'); n++;
+        if (!r.ok) { errs.push(a+'＋'+b+' 手順が組めない: '+r.error); continue; }
+        var got = A.toNumberString(applyBeats(st, r.beats));
+        if (got !== String(a+b)) errs.push(a+'＋'+b+' → '+got);
+        if (a >= b) {
+          var st2 = A.stateFromNumber(String(a));
+          var r2 = A.plan(st2, String(b), 'sub'); n++;
+          if (!r2.ok) { errs.push(a+'−'+b+' 手順が組めない'); continue; }
+          var got2 = A.toNumberString(applyBeats(st2, r2.beats));
+          if (got2 !== String(a-b)) errs.push(a+'−'+b+' → '+got2);
+        }
+      }
+    }
+    // 小数と大きな数
+    [['2.6','0.3','add','2.9'],['0.02','0.85','add','0.87'],['0.87','0.85','sub','0.02'],
+     ['30000','50000','add','80000'],['200000000','600000000','add','800000000'],
+     ['10000000000000','20000000000000','add','30000000000000'],
+     ['9.9','0.9','sub','9'],['1','0.99','sub','0.01']].forEach(function(t){
+      n++;
+      var st = A.stateFromNumber(t[0]);
+      var r = A.plan(st, t[1], t[2]);
+      if (!r.ok) { errs.push(t[0]+t[2]+t[1]+' 手順が組めない'); return; }
+      var got = A.toNumberString(applyBeats(st, r.beats));
+      if (got !== t[3]) errs.push(t[0]+(t[2]==='add'?'＋':'−')+t[1]+' → '+got+'（'+t[3]+'のはず）');
+    });
+    judge('手順どおりに動かすと答えになる', n, errs);
+  })();
+
+  /* ---- 3. コースの型が混ざっていないか ---- */
+  sec('3. コースごとの型（1コース500問）');
+  (function(){
+    var want = { 'g3-direct':'direct', 'g3-five':'five', 'g3-carry':'carry' };
+    Object.keys(want).forEach(function(id){
+      var c = C.filter(function(x){return x.id===id;})[0];
+      var errs = [], n = 0;
+      for (var i = 0; i < 500; i++) {
+        var q = c.gen(); n++;
+        if (!q) { errs.push('問題が作れなかった'); continue; }
+        var k = A.classify(q.a, q.b, q.op);
+        if (k !== want[id]) errs.push(q.a+(q.op==='add'?'＋':'−')+q.b+' は '+k+'（'+want[id]+'のはず）');
+      }
+      judge(c.name + '（' + want[id] + ' だけ）', n, errs);
+    });
+  })();
+
+  /* ---- 4. 学年の範囲を出ていないか ---- */
+  sec('4. 学年の範囲（1コース300問）');
+  (function(){
+    // 3年の本線＝整数だけ・万をこえない／3年のもっと＝万か小数第一位まで／4年＝兆・小数第二位まで
+    var limit = {
+      'g3-read':   { maxInt: 1e3,  dec: 0 },
+      'g3-enter':  { maxInt: 1e3,  dec: 0 },
+      'g3-direct': { maxInt: 1e2,  dec: 0 },
+      'g3-five':   { maxInt: 1e2,  dec: 0 },
+      'g3-carry':  { maxInt: 1e2,  dec: 0 },
+      'g3-man':    { maxInt: 1e5,  dec: 0 },
+      'g3-dec1':   { maxInt: 1e2,  dec: 1 },
+      'g4-two':    { maxInt: 1e2,  dec: 0 },
+      'g4-big':    { maxInt: 1e14, dec: 0 },
+      'g4-big-read':{maxInt: 1e14, dec: 0 },
+      'g4-dec2':   { maxInt: 1e1,  dec: 2 }
+    };
+    C.forEach(function(c){
+      var lim = limit[c.id]; if (!lim) return;
+      var errs = [], n = 0;
+      for (var i = 0; i < 300; i++) {
+        var q = c.gen(); n++;
+        if (!q) { errs.push('問題が作れなかった'); continue; }
+        var vals = (c.kind === 'calc') ? [q.a, q.b] : [q.value].concat(q.others || []);
+        vals.forEach(function(v){
+          var parts = String(v).split('.');
+          var dec = parts[1] ? parts[1].replace(/0+$/,'').length : 0;
+          if (dec > lim.dec) errs.push(v + ' は小数第' + dec + '位まである（この学年は第' + lim.dec + '位まで）');
+          if (Number(parts[0]) >= lim.maxInt) errs.push(v + ' は整数部が大きすぎる');
+        });
+        // 計算の答えも範囲に入るか
+        if (c.kind === 'calc') {
+          var st = A.stateFromNumber(q.a);
+          var r = A.plan(st, q.b, q.op);
+          if (!r.ok) { errs.push(q.a+q.op+q.b+' 手順が組めない'); return; }
+          var ans = A.toNumberString(applyBeats(st, r.beats));
+          if (ans.indexOf('-') === 0) errs.push(q.a+'−'+q.b+' の答えがマイナス');
+          var ad = ans.split('.')[1];
+          if (ad && ad.replace(/0+$/,'').length > lim.dec) errs.push('答え ' + ans + ' が小数第' + lim.dec + '位をこえる');
+        }
+      }
+      judge(c.grade + '年 ' + c.name, n, errs);
+    });
+  })();
+
+  var s = document.getElementById('sum');
+  s.innerHTML = (bad === 0)
+    ? '<span class="ok">ぜんぶ通りました。</span> 検査 ' + total.toLocaleString() + ' 通り／まちがい 0 件。'
+    : '<span class="ng">まちがいが ' + bad + ' 件あります。</span><br>' + fails.join('<br>');
+})();
+</script>
+</body>
+</html>
