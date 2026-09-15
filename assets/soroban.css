@@ -139,11 +139,15 @@
   font-size: 11px; line-height: 1.5; white-space: nowrap;
 }
 
-/* ===== 読み取った数 ===== */
+/* ===== 読み取った数 =====
+   ふだんは伏せておく。珠を読むのが先で、数はたしかめに使うもの。
+   出したときに下が動かないよう、場所は空けたまま隠す。 */
 .readout {
   display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center;
   gap: 4px 14px; margin: 10px auto 0; text-align: center;
+  visibility: hidden;
 }
+body.reveal .readout { visibility: visible; }
 .readout .num {
   font-size: clamp(1.5rem, 5.5vw, 2.3rem); font-weight: 600;
   letter-spacing: 0.02em; color: var(--ink);
@@ -162,22 +166,28 @@ body.stage { background: #14100c; }
 body.stage .topbar,
 body.stage .site-foot,
 body.stage .drill,
-body.stage .intro,
-body.stage .board-tools .hide-on-stage { display: none !important; }
+body.stage .hero,
+body.stage .hide-on-stage { display: none !important; }
+/* 盤は画面の真ん中。上は数の席、下はボタンの席をあけておく（重ならないように） */
+body.stage .board-sec {
+  min-height: 100svh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 92px 0 96px;
+}
 body.stage .soroban-wrap {
-  --pitch: clamp(26px, calc((100vw - 40px) / 17), 96px);
-  min-height: 100svh; justify-content: center; padding: 0;
+  /* 映す場面なので、せまい画面でも17けたが全部入るようにする（下限を切らない） */
+  --pitch: min(96px, calc((100vw - 28px) / 17));
+  justify-content: center; padding: 0; overflow-x: hidden;
 }
 /* 大きくうつしているときは、数をいったん伏せる。
    「いくつでしょう」と聞いてから出せるように。 */
-body.stage .readout { position: fixed; top: 22px; left: 0; right: 0; margin: 0; }
+body.stage .readout { position: fixed; top: 20px; left: 0; right: 0; margin: 0; z-index: 3; }
 body.stage .readout .num { color: #f6ecdc; }
 body.stage .readout .kanji { color: #b6a892; }
 body.stage .places { color: #b6a892; }
-body.stage:not(.reveal) .readout { visibility: hidden; }
-body.stage .stage-exit, body.stage .stage-only { display: inline-flex !important; }
-.stage-exit, .stage-only { display: none; }
-body.stage .board-tools { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; margin: 0; }
+body.stage .stage-exit { display: inline-flex !important; }
+.stage-exit { display: none; }
+body.stage .board-tools { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; margin: 0; z-index: 3; }
 
 @media (max-width: 600px) {
   .ones-marker .lbl { font-size: 10px; }
@@ -208,3 +218,9 @@ body.stage .board-tools { position: fixed; left: 50%; transform: translateX(-50%
 .soroban-wrap.fit-all .places { height: 32px; }
 .soroban-wrap.fit-all .places span { font-size: 10px; }
 .soroban-wrap.fit-all .places span[data-row="2"] { top: 14px; }
+/* 大きくうつすモードも、せまい画面では同じように段を分ける */
+@media (max-width: 760px) {
+  body.stage .places { height: 32px; }
+  body.stage .places span { font-size: 10px; }
+  body.stage .places span[data-row="2"] { top: 14px; }
+}

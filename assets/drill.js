@@ -17,6 +17,18 @@
 
   function $(id) { return document.getElementById(id); }
 
+  /** 読み取った数を出すか、伏せるか。
+      ふだんは伏せておく——珠を読むのが先で、数はたしかめに使うもの。 */
+  function isRevealed() { return document.body.classList.contains('reveal'); }
+
+  function setReveal(on) {
+    document.body.classList.toggle('reveal', !!on);
+    if (!el.revealBtn) return;
+    el.revealBtn.textContent = on ? '数をかくす' : '数を出す';
+    el.revealBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    el.revealBtn.classList.toggle('is-on', !!on);
+  }
+
   /** 盤ぜんたいを見せるか、指でさわれる大きさにするか */
   function setFit(on) {
     var w = el.sorobanWrap;
@@ -166,6 +178,7 @@
     sb.lockMarker(true);
     sb.clearLight();
 
+    setReveal(false);   // 新しい問題では、数はいったん伏せる
     el.judge.hidden = true;
     el.beatSay.hidden = true;
     el.whyNote.hidden = true;
@@ -431,22 +444,11 @@
       if (on) global.Sound.click('beam', 1);
     });
 
-    function leaveStage() {
-      document.body.classList.remove('stage', 'reveal');
-      el.revealBtn.textContent = '数を出す';
-      el.revealBtn.setAttribute('aria-pressed', 'false');
-      el.revealBtn.classList.remove('is-on');
-    }
     el.stageBtn.addEventListener('click', function () { document.body.classList.add('stage'); });
-    el.stageExit.addEventListener('click', leaveStage);
-    el.revealBtn.addEventListener('click', function () {
-      var on = document.body.classList.toggle('reveal');
-      el.revealBtn.textContent = on ? '数をかくす' : '数を出す';
-      el.revealBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      el.revealBtn.classList.toggle('is-on', on);
-    });
+    el.stageExit.addEventListener('click', function () { document.body.classList.remove('stage'); });
+    el.revealBtn.addEventListener('click', function () { setReveal(!isRevealed()); });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') leaveStage();
+      if (e.key === 'Escape') document.body.classList.remove('stage');
     });
 
     el.rubyToggle.addEventListener('change', function () {
